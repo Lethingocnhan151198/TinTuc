@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:title=""
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/vnExpress"
+                android:icon="@drawable/ic_vnexpress"
+                android:title="Vn Express" />
+
+            <item
+                android:id="@+id/cnn"
+                android:icon="@drawable/ic_cnn"
+                android:title="CNN" />
+
+        </menu>
+    </item>
+
+</menu>

@@ -1,0 +1,2 @@
+rootProject.name='Tin Tức'
+include ':app'

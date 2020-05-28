@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Tin Tức</string>
+    <string name="error_load_data"> Không có dữ liệu> </string>
+
+</resources>
