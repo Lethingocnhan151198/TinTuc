@@ -74,13 +74,7 @@
                         </LinearLayout>
 
                     </FrameLayout>
-                    <ImageView
-                        android:id="@+id/imgShare"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:padding="5dp"
-                        android:layout_gravity="end"
-                        android:src="@drawable/ic_share_64dp" />
+
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
@@ -104,6 +98,13 @@
                     android:id="@+id/webView"/>
 
             </androidx.cardview.widget.CardView>
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabShare"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="end"
+                android:src="@drawable/ic_share_black_24dp"
+                />
         </LinearLayout>
     </ScrollView>
 

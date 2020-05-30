@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -62,6 +63,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         init();
         setUpToolbar();
         setupAdapter();
+        vnExpress();
         setUpRecycler();
     }
 
@@ -76,13 +78,20 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         recyclerHome.setLayoutManager(new LinearLayoutManager(this));
         adapterHome = new AdapterHome(this,arrayList);
         recyclerHome.setAdapter(adapterHome);
+        swipeRefresh.setRefreshing(false);
 
     }
-    private void addCategories() {
-        categories = new ArrayList<>();
-        categories.add(new Categories("Thể loại",0));
-       categories.add(new Categories("Thể thao",R.drawable.ic_sport_64dp));
-       categories.add(new Categories("Sức khỏe",0));
+    private void addCategories() { categories = new ArrayList<>();
+
+        categories.add(new Categories("Thể loại",R.drawable.ic_list_128dp));
+        categories.add(new Categories("Tin nóng",R.drawable.ic_newsletter_128dp));
+        categories.add(new Categories("Thời sự",R.drawable.ic_news_128dp));
+        categories.add(new Categories("Sức khỏe",R.drawable.ic_healthy_128dp));
+        categories.add(new Categories("Du lịch",R.drawable.ic_journey_128dp));
+        categories.add(new Categories("Thể thao",R.drawable.ic_sport_64dp));
+        categories.add(new Categories("Thế giới",R.drawable.ic_globe_128dp));
+
+
 
     }
     private void setupAdapter() {
@@ -95,9 +104,26 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     return;
                 }
                 else {
-                  Intent intent = new Intent(getApplicationContext(),ListCateActivity.class);
-                  intent.putExtra("current",position);
-                  startActivity(intent);
+                 switch ((int) id){
+                     case 1:
+                         QueryData("tin nóng");
+                         break;
+                     case 2:
+                         QueryData("thời sự");
+                         break;
+                     case 3:
+                         QueryData("sức khỏe");
+                         break;
+                     case 4:
+                         QueryData("Du lịch");
+                         break;
+                     case 5:
+                         QueryData("Thể thao");
+                         break;
+                     case 6:
+                         QueryData("Thế giới");
+                         break;
+                 }
                 }
             }
 
@@ -124,6 +150,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.cnn:
                 Cnn();
+            case R.id.Tinhte:
+                Tinhte();
+                break;
         }
         drawerLayout.closeDrawers();
         return false;
@@ -146,20 +175,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
     }
     public void vnExpress(){
-        // call Api vn Express
+
+            // call Api vn Express
         swipeRefresh.setRefreshing(true);
-        Call<Headline> call = ApiClient.getInstance().getData().getDataDomain("vnexpress.net",API_KEY);
+            Call<Headline> call = ApiClient.getInstance().getData().getDataDomain("vnexpress.net",API_KEY);
         call.enqueue(new Callback<Headline>() {
-            @Override
-            public void onResponse(Call<Headline> call, Response<Headline> response) {
-                swipeRefresh.setRefreshing(false);
-                arrayList.clear();
-                arrayList = (ArrayList<Article>) response.body().getArticles();
-                setUpRecycler();
-                swipeRefresh.setRefreshing(false);
-
-            }
-
+                @Override
+                public void onResponse(Call<Headline> call, Response<Headline> response) {
+                    arrayList.clear();
+                    arrayList = (ArrayList<Article>) response.body().getArticles();
+                    setUpRecycler();
+                    swipeRefresh.setRefreshing(false);
+                }
             @Override
             public void onFailure(Call<Headline> call, Throwable t) {
                 swipeRefresh.setRefreshing(false);
@@ -182,6 +209,25 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
             }
 
+            @Override
+            public void onFailure(Call<Headline> call, Throwable t) {
+                swipeRefresh.setRefreshing(false);
+                Toast.makeText(HomeActivity.this, "Dữ liệu lỗi", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void Tinhte(){
+        // call Api vn Express
+        swipeRefresh.setRefreshing(true);
+        Call<Headline> call = ApiClient.getInstance().getData().getDataDomain("tinhte.vn",API_KEY);
+        call.enqueue(new Callback<Headline>() {
+            @Override
+            public void onResponse(Call<Headline> call, Response<Headline> response) {
+                arrayList.clear();
+                arrayList = (ArrayList<Article>) response.body().getArticles();
+                setUpRecycler();
+                swipeRefresh.setRefreshing(false);
+            }
             @Override
             public void onFailure(Call<Headline> call, Throwable t) {
                 swipeRefresh.setRefreshing(false);
@@ -227,13 +273,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         return super.onCreateOptionsMenu(menu);
     }
     private void QueryData(String query) {
+        swipeRefresh.setRefreshing(true);
         Call<Headline> call = ApiClient.getInstance().getData().getEverythingData(query,API_KEY);
         call.enqueue(new Callback<Headline>() {
             @Override
             public void onResponse(Call<Headline> call, Response<Headline> response) {
+
                 arrayList.clear();
                 arrayList = (ArrayList<Article>) response.body().getArticles();
                 setUpRecycler();
+                swipeRefresh.setRefreshing(false);
             }
 
             @Override

@@ -8,6 +8,12 @@ import retrofit2.http.Query;
 
 public interface ApiQueryData {
 
+    @GET("top-headlines")
+    Call<Headline> getHeadlines(
+            @Query("sources") String sources,
+            @Query("apiKey") String apiKey
+    );
+
     @GET("everything")
     Call<Headline> getEverythingData(  // tra từ khóa trong tìm kiếm
             @Query("q") String query,

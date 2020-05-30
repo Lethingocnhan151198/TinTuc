@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.tintc.R;
 import com.example.tintc.config.DateUtils;
-import com.example.tintc.config.Typeface;
 import com.example.tintc.model.Article;
 import com.example.tintc.view.DetailActivity;
 
