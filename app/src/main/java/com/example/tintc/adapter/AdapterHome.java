@@ -43,18 +43,15 @@ public class AdapterHome extends RecyclerView.Adapter<AdapterHome.ViewHolder> {
                 .into(holder.imgBanner);
         holder.tvSource.setText(articles.get(position).getSource().getName());
         holder.tvTitle.setText(articles.get(position).getTitle());
-        holder.tvTime.setText(Typeface.getInstance().getTypeface("Cách đây ",0,9) + DateUtils.getInstance().dateTime(articles.get(position).getPublishedAt()));
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), DetailActivity.class);
-//                intent.putExtra("title",articles.get(position).getTitle());
-                intent.putExtra("image",articles.get(position).getUrlToImage());
-                intent.putExtra("link",articles.get(position).getUrl());
-                intent.putExtra("time",DateUtils.getInstance().dateTime(articles.get(position).getPublishedAt()));
-                v.getContext().startActivity(intent);
+        holder.tvTime.setText(DateUtils.getInstance().dateTime(articles.get(position).getPublishedAt()));
+        holder.cardView.setOnClickListener(v -> {
+            Intent intent = new Intent(v.getContext(), DetailActivity.class);
+            intent.putExtra("image",articles.get(position).getUrlToImage());
+            intent.putExtra("link",articles.get(position).getUrl());
+            intent.putExtra("time",DateUtils.getInstance().dateTime(articles.get(position).getPublishedAt()));
+            intent.putExtra("source",articles.get(position).getSource());
+            v.getContext().startActivity(intent);
 
-            }
         });
     }
 

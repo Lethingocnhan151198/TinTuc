@@ -20,4 +20,10 @@ public interface ApiQueryData {
             @Query("domains") String query,
             @Query("apiKey") String apiKey
     );
+
+    @GET("everything")
+    Call<Headline> getDataDomain(
+            @Query("domains") String domains,
+            @Query("apiKey") String apiKey
+    );
 }

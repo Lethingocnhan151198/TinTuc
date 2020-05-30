@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/ic_custom_1"
     android:layout_margin="3dp"
     >
     <ImageView
@@ -20,15 +19,14 @@
         android:layout_alignBottom="@+id/image_view_flag"
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/image_view_flag"
-        android:text="Thể thao"
+        android:text="Mục lục"
         android:layout_marginStart="10sp"
         android:layout_marginEnd="15dp"
-       android:fontFamily="@font/g_bold"
-        android:padding="8dp"
+        android:fontFamily="@font/g_bold"
         android:textColor="#F3222121"
         android:gravity="left|center"
         android:drawablePadding="30dp"
-        android:textSize="16sp"
+        android:textSize="20sp"
         android:layout_toRightOf="@+id/image_view_flag" />
 
 </RelativeLayout>

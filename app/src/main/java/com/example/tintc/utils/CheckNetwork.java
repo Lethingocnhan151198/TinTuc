@@ -1,11 +1,13 @@
 package com.example.tintc.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 public class CheckNetwork {
     private static CheckNetwork checkNetwork;
+
     public static CheckNetwork getInstance(){
         if (checkNetwork ==null){
             checkNetwork = new CheckNetwork();
@@ -29,5 +31,20 @@ public class CheckNetwork {
         }
         return false;
     }
-
+    public static boolean isConnectInternet(final Context pContext) {
+        final ConnectivityManager conManager = (ConnectivityManager) pContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final NetworkInfo networkInfo = conManager.getActiveNetworkInfo();
+        if (networkInfo != null) {
+            return networkInfo.isAvailable();
+        }
+        return false;
+    }
+    public static boolean checkWifi(Context context) {
+        ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivity == null) {
+            return false;
+        }
+        @SuppressLint("MissingPermission") NetworkInfo info = connectivity.getActiveNetworkInfo();
+        return info != null && info.isConnected() && info.getType() == ConnectivityManager.TYPE_WIFI;
+    }
 }
