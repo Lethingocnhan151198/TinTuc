@@ -20,5 +20,15 @@
 
         </menu>
     </item>
+    <item
+        android:title="Thêm"
+        app:showAsAction="always"
+        >
+        <menu>
+            <item android:title="Đăng xuất"
+                android:id="@+id/logout"
+                android:icon="@drawable/ic_backspace_black_24dp"/>
+        </menu>
+    </item>
 
 </menu>

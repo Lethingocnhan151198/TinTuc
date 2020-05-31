@@ -27,12 +27,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tintc.R;
+import com.example.tintc.SplashActivity;
 import com.example.tintc.adapter.AdapterCategories;
 import com.example.tintc.adapter.AdapterHome;
 import com.example.tintc.api.ApiClient;
 import com.example.tintc.model.Article;
 import com.example.tintc.model.Categories;
 import com.example.tintc.model.Headline;
+import com.example.tintc.model.User;
+import com.example.tintc.utils.AccountUtils;
 import com.example.tintc.utils.CheckNetwork;
 import com.google.android.material.navigation.NavigationView;
 
@@ -55,10 +58,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private ArrayList<Article> arrayList = new ArrayList<>();
     final String API_KEY = "a8000ce54cd44528afee2faa7be1a385";
     private int Current = 0;
+    private User user;
+    private TextView tvName,tvSdt;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        getData();
         addCategories();
         init();
         setUpToolbar();
@@ -67,63 +74,69 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         setUpRecycler();
     }
 
+    private void getData() {
+        user = (User) getIntent().getSerializableExtra("user");
+    }
+
     private void setUpToolbar() {
         setSupportActionBar(toolbarHome);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
     }
+
     private void setUpRecycler() {
         recyclerHome.setHasFixedSize(true);
         recyclerHome.setLayoutManager(new LinearLayoutManager(this));
-        adapterHome = new AdapterHome(this,arrayList);
+        adapterHome = new AdapterHome(this, arrayList);
         recyclerHome.setAdapter(adapterHome);
         swipeRefresh.setRefreshing(false);
 
     }
-    private void addCategories() { categories = new ArrayList<>();
 
-        categories.add(new Categories("Thể loại",R.drawable.ic_list_128dp));
-        categories.add(new Categories("Tin nóng",R.drawable.ic_newsletter_128dp));
-        categories.add(new Categories("Thời sự",R.drawable.ic_news_128dp));
-        categories.add(new Categories("Sức khỏe",R.drawable.ic_healthy_128dp));
-        categories.add(new Categories("Du lịch",R.drawable.ic_journey_128dp));
-        categories.add(new Categories("Thể thao",R.drawable.ic_sport_64dp));
-        categories.add(new Categories("Thế giới",R.drawable.ic_globe_128dp));
+    private void addCategories() {
+        categories = new ArrayList<>();
 
+        categories.add(new Categories("Thể loại", R.drawable.ic_list_128dp));
+        categories.add(new Categories("Tin nóng", R.drawable.ic_newsletter_128dp));
+        categories.add(new Categories("Thời sự", R.drawable.ic_news_128dp));
+        categories.add(new Categories("Sức khỏe", R.drawable.ic_healthy_128dp));
+        categories.add(new Categories("Du lịch", R.drawable.ic_journey_128dp));
+        categories.add(new Categories("Thể thao", R.drawable.ic_sport_64dp));
+        categories.add(new Categories("Thế giới", R.drawable.ic_globe_128dp));
 
 
     }
+
     private void setupAdapter() {
-        adapterCategories = new AdapterCategories(this,categories);
+        adapterCategories = new AdapterCategories(this, categories);
         spCategories.setAdapter(adapterCategories);
         spCategories.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (Current == position){
+                if (Current == position) {
                     return;
-                }
-                else {
-                 switch ((int) id){
-                     case 1:
-                         QueryData("tin nóng");
-                         break;
-                     case 2:
-                         QueryData("thời sự");
-                         break;
-                     case 3:
-                         QueryData("sức khỏe");
-                         break;
-                     case 4:
-                         QueryData("Du lịch");
-                         break;
-                     case 5:
-                         QueryData("Thể thao");
-                         break;
-                     case 6:
-                         QueryData("Thế giới");
-                         break;
-                 }
+                } else {
+                    switch ((int) id) {
+                        case 1:
+                            QueryData("tin nóng");
+                            break;
+                        case 2:
+                            QueryData("thời sự");
+                            break;
+                        case 3:
+                            QueryData("sức khỏe");
+                            break;
+                        case 4:
+                            QueryData("Du lịch");
+                            break;
+                        case 5:
+                            QueryData("Thể thao");
+                            break;
+                        case 6:
+                            QueryData("Thế giới");
+                            break;
+                    }
                 }
             }
 
@@ -134,17 +147,24 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         });
         navigationView.setNavigationItemSelectedListener(this);
     }
+
     private void init() {
-        toolbarHome    = findViewById(R.id.toolbarHome);
-        spCategories   = findViewById(R.id.spCategories);
-        drawerLayout   = findViewById(R.id.drawerLayout);
+        toolbarHome = findViewById(R.id.toolbarHome);
+        spCategories = findViewById(R.id.spCategories);
+        drawerLayout = findViewById(R.id.drawerLayout);
         navigationView = findViewById(R.id.navigationView);
-        recyclerHome   = findViewById(R.id.recyclerView);
-        swipeRefresh   = findViewById(R.id.swipeRefresh);
+        recyclerHome = findViewById(R.id.recyclerView);
+        swipeRefresh = findViewById(R.id.swipeRefresh);
+        tvName        = navigationView.getHeaderView(0).findViewById(R.id.tvName);
+        tvSdt         = navigationView.getHeaderView(0).findViewById(R.id.tvSdt);
+        tvName.setText(user.getFullName());
+        tvSdt.setText(user.getPhoneNumber());
+
     }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.vnExpress:
                 vnExpress();
                 break;
@@ -153,10 +173,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case R.id.Tinhte:
                 Tinhte();
                 break;
+            case R.id.logout:
+                AccountUtils.getInstance(this).logout();
+                Intent intent = new Intent(this, SplashActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+                break;
+
         }
         drawerLayout.closeDrawers();
         return false;
     }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -166,6 +195,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
         return super.onOptionsItemSelected(item);
     }
+
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -174,19 +204,21 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             super.onBackPressed();
         }
     }
-    public void vnExpress(){
 
-            // call Api vn Express
+    public void vnExpress() {
+
+        // call Api vn Express
         swipeRefresh.setRefreshing(true);
-            Call<Headline> call = ApiClient.getInstance().getData().getDataDomain("vnexpress.net",API_KEY);
+        Call<Headline> call = ApiClient.getInstance().getData().getDataDomain("vnexpress.net", API_KEY);
         call.enqueue(new Callback<Headline>() {
-                @Override
-                public void onResponse(Call<Headline> call, Response<Headline> response) {
-                    arrayList.clear();
-                    arrayList = (ArrayList<Article>) response.body().getArticles();
-                    setUpRecycler();
-                    swipeRefresh.setRefreshing(false);
-                }
+            @Override
+            public void onResponse(Call<Headline> call, Response<Headline> response) {
+                arrayList.clear();
+                arrayList = (ArrayList<Article>) response.body().getArticles();
+                setUpRecycler();
+                swipeRefresh.setRefreshing(false);
+            }
+
             @Override
             public void onFailure(Call<Headline> call, Throwable t) {
                 swipeRefresh.setRefreshing(false);
@@ -194,10 +226,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             }
         });
     }
+
     private void Cnn() {
         // call Api vn Express
         swipeRefresh.setRefreshing(true);
-        Call<Headline> call = ApiClient.getInstance().getData().getDataDomain("cnn.com",API_KEY);
+        Call<Headline> call = ApiClient.getInstance().getData().getDataDomain("cnn.com", API_KEY);
         call.enqueue(new Callback<Headline>() {
             @Override
             public void onResponse(Call<Headline> call, Response<Headline> response) {
@@ -216,10 +249,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             }
         });
     }
-    private void Tinhte(){
+
+    private void Tinhte() {
         // call Api vn Express
         swipeRefresh.setRefreshing(true);
-        Call<Headline> call = ApiClient.getInstance().getData().getDataDomain("tinhte.vn",API_KEY);
+        Call<Headline> call = ApiClient.getInstance().getData().getDataDomain("tinhte.vn", API_KEY);
         call.enqueue(new Callback<Headline>() {
             @Override
             public void onResponse(Call<Headline> call, Response<Headline> response) {
@@ -228,6 +262,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 setUpRecycler();
                 swipeRefresh.setRefreshing(false);
             }
+
             @Override
             public void onFailure(Call<Headline> call, Throwable t) {
                 swipeRefresh.setRefreshing(false);
@@ -235,6 +270,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             }
         });
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
@@ -253,7 +289,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
-                    if(query !=null) {
+                    if (query != null) {
                         QueryData(query);
                         swipeRefresh.setRefreshing(false);
                     }
@@ -272,9 +308,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
         return super.onCreateOptionsMenu(menu);
     }
+
     private void QueryData(String query) {
         swipeRefresh.setRefreshing(true);
-        Call<Headline> call = ApiClient.getInstance().getData().getEverythingData(query,API_KEY);
+        Call<Headline> call = ApiClient.getInstance().getData().getEverythingData(query, API_KEY);
         call.enqueue(new Callback<Headline>() {
             @Override
             public void onResponse(Call<Headline> call, Response<Headline> response) {

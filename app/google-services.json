@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "394665070504",
+    "firebase_url": "https://tin-tuc-2ea17.firebaseio.com",
+    "project_id": "tin-tuc-2ea17",
+    "storage_bucket": "tin-tuc-2ea17.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:394665070504:android:51cfb32f5702802540979d",
+        "android_client_info": {
+          "package_name": "com.example.tintc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "394665070504-7khdi92ikn3ojf6qqchmdd5vnf5m6078.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tintc",
+            "certificate_hash": "b0eb4fab0f7dd77daf460788ad0e18a4dfd1c3bf"
+          }
+        },
+        {
+          "client_id": "394665070504-u6n01paonuo1h19hh2871ffgorusib4h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAa2eM0Jb3Hfiiiqg-m1AVa7ATaogicjEk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "394665070504-u6n01paonuo1h19hh2871ffgorusib4h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -23,10 +23,10 @@
             android:layout_marginEnd="15dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:src="@drawable/ic_vnexpress"
+            android:src="@drawable/ic_splash"
             />
         <TextView
-            android:id="@+id/txtName"
+            android:id="@+id/tvName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="#111"
@@ -37,6 +37,19 @@
             android:fontFamily="@font/g_bold"
             android:textSize="16sp"
             android:text="Tên người dùng"
+            />
+        <TextView
+            android:id="@+id/tvSdt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#111"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="10dp"
+            android:singleLine="true"
+            android:fontFamily="@font/g_bold"
+            android:textSize="16sp"
+            android:text="1213271613"
             />
     </LinearLayout>
 </LinearLayout>

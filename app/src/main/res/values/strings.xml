@@ -3,4 +3,9 @@
     <string name="error_load_data"> Không có dữ liệu> </string>
     <string name="check_data">Check out data</string>
     <string name="share_with_home">Chia sẻ tin tức với ứng dụng</string>
+    <string name="register">ĐĂNG KÝ </string>
+    <string name="login_email_hint">Phone Number</string>
+    <string name="signup_login_hint" >Đã có tài khoản ? Đăng nhập ngay !</string>
+    <string name="login_signup_hint">Chưa có tài khoản ? Đăng ký ngay</string>
+    <string name="login_password_hint" >Password</string>
 </resources>
