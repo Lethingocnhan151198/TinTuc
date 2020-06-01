@@ -24,12 +24,18 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_login);
+        if (AccountUtils.getInstance(this).getUser() != null) {
+            startActivity(new Intent(this, HomeActivity.class));
+            finish();
+            return;
+        }
         init();
     }
 
     private void init() {
-        edtSdt      = findViewById(R.id.edtSdt);
+        edtSdt = findViewById(R.id.edtSdt);
         edtPassword = findViewById(R.id.edtPassword);
     }
 
@@ -54,28 +60,19 @@ public class LoginActivity extends AppCompatActivity {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                        User user = dataSnapshot.getValue(User.class);
-//                        if(user.getPassword().equals(pass){
-//                            AccountUtils.getInstance(LoginActivity.this).setUser(user);
-//                            Intent intent = new Intent(getApplicationContext(),HomeActivity.class;
-//                            intent.putExtra("user",user);
-//                            startActivity(intent);
-//                            finish();
-//                        }
-                        if (dataSnapshot.exists()){
+
+                        if (dataSnapshot.exists()) {
                             User user = dataSnapshot.getValue(User.class);
-                            if (user.getPassword().equals(pass)){
-                            AccountUtils.getInstance(getApplicationContext()).setUser(user);
-                            Intent intent = new Intent(getApplicationContext(),HomeActivity.class);
-                            intent.putExtra("user",user);
-                            startActivity(intent);
-                            finish();
-                            }
-                            else {
+                            if (user.getPassword().equals(pass)) {
+                                AccountUtils.getInstance(getApplicationContext()).setUser(user);
+                                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                                intent.putExtra("user", user);
+                                startActivity(intent);
+                                finish();
+                            } else {
                                 Toast.makeText(LoginActivity.this, "Mật khẩu không đúng !", Toast.LENGTH_SHORT).show();
                             }
-                        }
-                        else {
+                        } else {
                             Toast.makeText(LoginActivity.this, "Tài khoản không tồn tại!", Toast.LENGTH_SHORT).show();
                         }
                     }

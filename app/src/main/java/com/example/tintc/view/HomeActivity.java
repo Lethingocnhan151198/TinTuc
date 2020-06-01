@@ -75,7 +75,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void getData() {
-        user = (User) getIntent().getSerializableExtra("user");
+        user = AccountUtils.getInstance(this).getUser();
     }
 
     private void setUpToolbar() {
