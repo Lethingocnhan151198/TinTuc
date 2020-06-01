@@ -61,4 +61,7 @@ dependencies {
 
     // dùng animation
     implementation 'com.airbnb.android:lottie:3.0.7'
+
+    // jsoup HTML parser library @ https://jsoup.org/
+    implementation 'org.jsoup:jsoup:1.13.1'
 }

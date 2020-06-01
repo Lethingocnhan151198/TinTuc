@@ -25,6 +25,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Objects;
+
 public class RegisterActivity extends AppCompatActivity {
     private EditText edtName, edtSdtRegister, edtPasswordRegister, edtRePasswordRegister;
     private Toolbar toolbar;
@@ -39,7 +41,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void setUpToolbar() {
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
     }
 
@@ -82,6 +84,7 @@ public class RegisterActivity extends AppCompatActivity {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Toast.makeText(RegisterActivity.this, "Test clicked", Toast.LENGTH_SHORT).show();
                         if (dataSnapshot.exists()){
                             Toast.makeText(RegisterActivity.this, "Tài khoản đã tồn tại!", Toast.LENGTH_SHORT).show();
                         }
@@ -92,13 +95,14 @@ public class RegisterActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                        Toast.makeText(RegisterActivity.this, "CANCEL", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     private void registerAccount() {
         User user = new User();
+        Toast.makeText(this, "test toast", Toast.LENGTH_SHORT).show();
         user.setFullName(edtName.getText().toString());
         user.setPhoneNumber(edtSdtRegister.getText().toString());
         user.setPassword(edtPasswordRegister.getText().toString());

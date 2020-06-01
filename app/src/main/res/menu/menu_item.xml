@@ -25,6 +25,9 @@
         app:showAsAction="always"
         >
         <menu>
+            <item android:title="Đã lưu"
+                android:id="@+id/history"
+                android:icon="@drawable/ic_history"/>
             <item android:title="Đăng xuất"
                 android:id="@+id/logout"
                 android:icon="@drawable/ic_backspace_black_24dp"/>

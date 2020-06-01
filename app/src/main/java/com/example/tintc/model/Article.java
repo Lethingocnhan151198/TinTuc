@@ -1,5 +1,7 @@
 package com.example.tintc.model;
 
+import android.graphics.Bitmap;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -34,7 +36,41 @@ public class Article implements Serializable {
     @Expose
     private String publishedAt;
 
+    private Bitmap imageBitmap;
+
     public Article() {
+    }
+
+    public Bitmap getImageBitmap() {
+        return imageBitmap;
+    }
+
+    public void setImageBitmap(Bitmap imageBitmap) {
+        this.imageBitmap = imageBitmap;
+    }
+
+    @Override
+    public String toString() {
+        return "Article{" +
+                "source=" + source +
+                ", author='" + author + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", url='" + url + '\'' +
+                ", urlToImage='" + urlToImage + '\'' +
+                ", publishedAt='" + publishedAt + '\'' +
+                ", imageBitmap=" + imageBitmap +
+                '}';
+    }
+
+    public Article(String source, String author, String title, String description, String url, Bitmap bitmapImage, String publishedAt) {
+        this.source = new Source(source, source);
+        this.author = author;
+        this.title = title;
+        this.description = description;
+        this.url = url;
+        this.imageBitmap = bitmapImage;
+        this.publishedAt = publishedAt;
     }
 
     public Article(Source source, String author, String title, String description, String url, String urlToImage, String publishedAt) {

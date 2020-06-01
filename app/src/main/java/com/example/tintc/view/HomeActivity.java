@@ -1,5 +1,20 @@
 package com.example.tintc.view;
 
+import android.app.SearchManager;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -10,36 +25,28 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.app.SearchManager;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.example.tintc.R;
 import com.example.tintc.SplashActivity;
 import com.example.tintc.adapter.AdapterCategories;
 import com.example.tintc.adapter.AdapterHome;
 import com.example.tintc.api.ApiClient;
+import com.example.tintc.database.NewsModify;
 import com.example.tintc.model.Article;
 import com.example.tintc.model.Categories;
 import com.example.tintc.model.Headline;
+import com.example.tintc.model.News;
 import com.example.tintc.model.User;
 import com.example.tintc.utils.AccountUtils;
-import com.example.tintc.utils.CheckNetwork;
 import com.google.android.material.navigation.NavigationView;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -59,12 +66,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     final String API_KEY = "a8000ce54cd44528afee2faa7be1a385";
     private int Current = 0;
     private User user;
-    private TextView tvName,tvSdt;
+    private TextView tvName, tvSdt;
+
+    private Map<Article, News> mapHistory = new HashMap<>();
+    private NewsModify mInstanceDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        mInstanceDatabase = NewsModify.getInstance(this);
+
         getData();
         addCategories();
         init();
@@ -88,7 +101,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private void setUpRecycler() {
         recyclerHome.setHasFixedSize(true);
         recyclerHome.setLayoutManager(new LinearLayoutManager(this));
-        adapterHome = new AdapterHome(this, arrayList);
+
+        adapterHome = new AdapterHome(this, arrayList, mapHistory);
         recyclerHome.setAdapter(adapterHome);
         swipeRefresh.setRefreshing(false);
 
@@ -155,8 +169,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         navigationView = findViewById(R.id.navigationView);
         recyclerHome = findViewById(R.id.recyclerView);
         swipeRefresh = findViewById(R.id.swipeRefresh);
-        tvName        = navigationView.getHeaderView(0).findViewById(R.id.tvName);
-        tvSdt         = navigationView.getHeaderView(0).findViewById(R.id.tvSdt);
+        tvName = navigationView.getHeaderView(0).findViewById(R.id.tvName);
+        tvSdt = navigationView.getHeaderView(0).findViewById(R.id.tvSdt);
         tvName.setText(user.getFullName());
         tvSdt.setText(user.getPhoneNumber());
 
@@ -173,6 +187,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case R.id.Tinhte:
                 Tinhte();
                 break;
+            case R.id.history:
+                loadHistory();
+                break;
             case R.id.logout:
                 AccountUtils.getInstance(this).logout();
                 Intent intent = new Intent(this, SplashActivity.class);
@@ -184,6 +201,27 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
         drawerLayout.closeDrawers();
         return false;
+    }
+
+    private void loadHistory() {
+        // call Api vn Express
+        arrayList.clear();
+        swipeRefresh.setRefreshing(true);
+
+        List<News> newsList = mInstanceDatabase.queryAllNews();
+        List<Article> articleList = mInstanceDatabase.queryAllArticle();
+
+        for (News news : newsList) {
+            for (Article article : articleList) {
+                if (news.getUrl().equals(article.getUrl())) {
+                    mapHistory.put(article, news);
+                    break;
+                }
+            }
+        }
+
+        arrayList.addAll(articleList);
+        setUpRecycler();
     }
 
     @Override
@@ -215,6 +253,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             public void onResponse(Call<Headline> call, Response<Headline> response) {
                 arrayList.clear();
                 arrayList = (ArrayList<Article>) response.body().getArticles();
+                runnableConvert.run();
                 setUpRecycler();
                 swipeRefresh.setRefreshing(false);
             }
@@ -237,6 +276,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 swipeRefresh.setRefreshing(false);
                 arrayList.clear();
                 arrayList = (ArrayList<Article>) response.body().getArticles();
+                runnableConvert.run();
                 setUpRecycler();
                 swipeRefresh.setRefreshing(false);
 
@@ -259,6 +299,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             public void onResponse(Call<Headline> call, Response<Headline> response) {
                 arrayList.clear();
                 arrayList = (ArrayList<Article>) response.body().getArticles();
+                runnableConvert.run();
                 setUpRecycler();
                 swipeRefresh.setRefreshing(false);
             }
@@ -318,6 +359,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                 arrayList.clear();
                 arrayList = (ArrayList<Article>) response.body().getArticles();
+
+                runnableConvert.run();
                 setUpRecycler();
                 swipeRefresh.setRefreshing(false);
             }
@@ -328,4 +371,31 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             }
         });
     }
+
+    private static final String TAG = "LOG_HomeActivity";
+
+    // TODO: ERROR - cannot convert url to bitmap.
+    private Runnable runnableConvert = // convert url to bitmap
+            new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < arrayList.size(); i++) {
+                        Article article = arrayList.get(i);
+                        try {
+                            Log.d(TAG, "run: " + article.getUrlToImage());
+                            URL _url = new URL(article.getUrlToImage());
+                            HttpURLConnection connection = (HttpURLConnection) _url.openConnection();
+                            connection.setDoInput(true);
+                            connection.connect();
+                            InputStream input = connection.getInputStream();
+
+                            article.setImageBitmap(BitmapFactory.decodeStream(input));
+                            arrayList.set(i, article);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            };
 }
