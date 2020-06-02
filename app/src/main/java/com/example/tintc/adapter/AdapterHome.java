@@ -51,7 +51,7 @@ public class AdapterHome extends RecyclerView.Adapter<AdapterHome.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder: " + position + " - " + isHistory);
-        if(isHistory){
+        if(isHistory && articles.get(position) != null){
             Glide.with(context)
                     .load(BitmapUtils.convertByteToBitmap(articles.get(position).getImageBitmap()))
                     .into(holder.imgBanner);

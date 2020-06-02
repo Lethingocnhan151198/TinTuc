@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -100,11 +101,12 @@ public class DetailActivity extends AppCompatActivity implements OnResult {
         webView.getSettings().setLoadsImagesAutomatically(true);
         webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
         webView.getSettings().setJavaScriptEnabled(true);
+        webView.setWebViewClient(new WebViewClient());
 
         Log.d(TAG, "getData: " + isOffline);
         Log.d(TAG, "getData: " + mCurrentHtml);
 
-        if (isOffline) { // loading offline
+        if (isOffline && mCurrentHtml != null) { // loading offline
             webView.loadDataWithBaseURL(null, mCurrentHtml, "text/html", "UTF-8", null);
         } else {
             webView.loadUrl(mCurrentURL);
