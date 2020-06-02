@@ -3,8 +3,8 @@ package com.example.tintc.view;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +30,7 @@ import com.example.tintc.SplashActivity;
 import com.example.tintc.adapter.AdapterCategories;
 import com.example.tintc.adapter.AdapterHome;
 import com.example.tintc.api.ApiClient;
+import com.example.tintc.callbacks.OnResult;
 import com.example.tintc.database.NewsModify;
 import com.example.tintc.model.Article;
 import com.example.tintc.model.Categories;
@@ -37,22 +38,21 @@ import com.example.tintc.model.Headline;
 import com.example.tintc.model.News;
 import com.example.tintc.model.User;
 import com.example.tintc.utils.AccountUtils;
+import com.example.tintc.utils.BitmapUtils;
 import com.google.android.material.navigation.NavigationView;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnResult {
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private ArrayList<Categories> categories;
@@ -73,18 +73,22 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
         mInstanceDatabase = NewsModify.getInstance(this);
-
         getData();
         addCategories();
         init();
         setUpToolbar();
         setupAdapter();
         vnExpress();
-        setUpRecycler();
+
+        setUpRecycler(false);
+
     }
 
     private void getData() {
@@ -93,16 +97,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     private void setUpToolbar() {
         setSupportActionBar(toolbarHome);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
     }
 
-    private void setUpRecycler() {
+    private void setUpRecycler(boolean isHistory) {
         recyclerHome.setHasFixedSize(true);
         recyclerHome.setLayoutManager(new LinearLayoutManager(this));
 
-        adapterHome = new AdapterHome(this, arrayList, mapHistory);
+        adapterHome = new AdapterHome(this, arrayList, mapHistory, isHistory);
         recyclerHome.setAdapter(adapterHome);
         swipeRefresh.setRefreshing(false);
 
@@ -118,7 +122,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         categories.add(new Categories("Du lịch", R.drawable.ic_journey_128dp));
         categories.add(new Categories("Thể thao", R.drawable.ic_sport_64dp));
         categories.add(new Categories("Thế giới", R.drawable.ic_globe_128dp));
-
 
     }
 
@@ -211,6 +214,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         List<News> newsList = mInstanceDatabase.queryAllNews();
         List<Article> articleList = mInstanceDatabase.queryAllArticle();
 
+        Log.d(TAG, "loadHistory: " + newsList);
+        Log.d(TAG, "loadHistory: " + articleList);
+
         for (News news : newsList) {
             for (Article article : articleList) {
                 if (news.getUrl().equals(article.getUrl())) {
@@ -221,7 +227,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
 
         arrayList.addAll(articleList);
-        setUpRecycler();
+        setUpRecycler(true);
     }
 
     @Override
@@ -253,8 +259,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             public void onResponse(Call<Headline> call, Response<Headline> response) {
                 arrayList.clear();
                 arrayList = (ArrayList<Article>) response.body().getArticles();
-                runnableConvert.run();
-                setUpRecycler();
+                getAllBitmap();
+                setUpRecycler(false);
                 swipeRefresh.setRefreshing(false);
             }
 
@@ -276,9 +282,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 swipeRefresh.setRefreshing(false);
                 arrayList.clear();
                 arrayList = (ArrayList<Article>) response.body().getArticles();
-                runnableConvert.run();
-                setUpRecycler();
-                swipeRefresh.setRefreshing(false);
+                getAllBitmap();
+                setUpRecycler(false);
 
             }
 
@@ -299,8 +304,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             public void onResponse(Call<Headline> call, Response<Headline> response) {
                 arrayList.clear();
                 arrayList = (ArrayList<Article>) response.body().getArticles();
-                runnableConvert.run();
-                setUpRecycler();
+                getAllBitmap();
                 swipeRefresh.setRefreshing(false);
             }
 
@@ -332,7 +336,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 public boolean onQueryTextSubmit(String query) {
                     if (query != null) {
                         QueryData(query);
-                        swipeRefresh.setRefreshing(false);
                     }
                     return false;
 
@@ -360,9 +363,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 arrayList.clear();
                 arrayList = (ArrayList<Article>) response.body().getArticles();
 
-                runnableConvert.run();
-                setUpRecycler();
-                swipeRefresh.setRefreshing(false);
+                getAllBitmap();
+                setUpRecycler(false);
             }
 
             @Override
@@ -374,28 +376,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     private static final String TAG = "LOG_HomeActivity";
 
-    // TODO: ERROR - cannot convert url to bitmap.
-    private Runnable runnableConvert = // convert url to bitmap
-            new Runnable() {
-                @Override
-                public void run() {
-                    for (int i = 0; i < arrayList.size(); i++) {
-                        Article article = arrayList.get(i);
-                        try {
-                            Log.d(TAG, "run: " + article.getUrlToImage());
-                            URL _url = new URL(article.getUrlToImage());
-                            HttpURLConnection connection = (HttpURLConnection) _url.openConnection();
-                            connection.setDoInput(true);
-                            connection.connect();
-                            InputStream input = connection.getInputStream();
+    public void getAllBitmap() {
+        BitmapUtils.GetBitmapFromUrl getBitmap = new BitmapUtils.GetBitmapFromUrl(this);
 
-                            article.setImageBitmap(BitmapFactory.decodeStream(input));
-                            arrayList.set(i, article);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+        Article[] articles = new Article[arrayList.size()];
+        getBitmap.execute(arrayList.toArray(articles));
 
-                    }
-                }
-            };
+    }
+
+    @Override
+    public void onFinish(Article[] articles) {
+        Log.d(TAG, "onFinish: " + articles[0]);
+        arrayList.clear();
+        arrayList.addAll(Arrays.asList(articles));
+        swipeRefresh.setRefreshing(false);
+    }
 }

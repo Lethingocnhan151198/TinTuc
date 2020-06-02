@@ -27,8 +27,10 @@ import com.example.tintc.utils.BitmapUtils;
 import com.example.tintc.utils.CheckNetwork;
 import com.example.tintc.utils.RetrieveHtml;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class DetailActivity extends AppCompatActivity implements OnResult {
     private ImageView imageView;
@@ -51,6 +53,7 @@ public class DetailActivity extends AppCompatActivity implements OnResult {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        Log.d(TAG, "onCreate: ");
         mInstanceDatabase = NewsModify.getInstance(this);
         retrieveHtml = new RetrieveHtml(this);
         mCurrentHtml = null;
@@ -60,52 +63,54 @@ public class DetailActivity extends AppCompatActivity implements OnResult {
     }
 
     private void getData() {
+        Log.d(TAG, "getData: ");
         Intent intent = getIntent();
         isOffline = intent.getBooleanExtra("offline", false);
         String source = intent.getStringExtra("source");
         String time = intent.getStringExtra("time");
         mCurrentURL = intent.getStringExtra("link");
+//        String gsonArticle =  intent.getStringExtra("article");
+//        mCurrentArticle = new Gson().fromJson(gsonArticle, Article.class);
         mCurrentArticle = (Article) intent.getSerializableExtra("article");
 
         if (isOffline) {
             mCurrentHtml = intent.getStringExtra("html");
-            Bitmap bitmapImage = BitmapUtils.convertByteToBitmap(intent.getByteArrayExtra("image"));
+            Bitmap bitmapImage = BitmapUtils.convertByteToBitmap(Objects.requireNonNull(intent.getByteArrayExtra("image")));
             Glide.with(this)
                     .load(bitmapImage)
                     .into(imageView);
+
+            Log.d(TAG, "getData: true");
         } else {
             String imageUrl = intent.getStringExtra("image");
             Glide.with(this)
                     .load(imageUrl)
                     .into(imageView);
+            Log.d(TAG, "getData: false");
         }
         loader.setVisibility(View.VISIBLE);
 
         tvSourceTl.setText(source);
         tvTime.setText(time);
 
-        retrieveHtml.execute(mCurrentURL);
+        if(!isOffline){
+            retrieveHtml.execute(mCurrentURL);
+        }
 
-        webView.getSettings().setDomStorageEnabled(true);
         webView.getSettings().setLoadsImagesAutomatically(true);
         webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-        webView.getSettings().setAppCacheMaxSize(5 * 1024 * 1024); // 5MB
-        webView.getSettings().setAppCachePath(getApplicationContext().getCacheDir().getAbsolutePath());
-        webView.getSettings().setAllowFileAccess(true);
-        webView.getSettings().setAppCacheEnabled(true);
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT); // load online by default
 
-        webView.setWebViewClient(new WebViewClient());
+        Log.d(TAG, "getData: " + isOffline);
+        Log.d(TAG, "getData: " + mCurrentHtml);
 
         if (isOffline) { // loading offline
-            webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-            webView.loadUrl(mCurrentHtml);
+            webView.loadDataWithBaseURL(null, mCurrentHtml, "text/html", "UTF-8", null);
         } else {
             webView.loadUrl(mCurrentURL);
         }
 
-        if (webView.isShown()) {
+        if(webView.isShown()){
             loader.setVisibility(View.INVISIBLE);
         }
 
@@ -151,10 +156,9 @@ public class DetailActivity extends AppCompatActivity implements OnResult {
 
     @Override
     public void onFinish(String html) {
-        Log.d(TAG, "onFinish: " + mCurrentURL);
-        Log.d(TAG, "onFinish: " + mCurrentURL);
-
         if(!isOffline){
+            Log.d(TAG, "onFinish: " + mCurrentURL);
+            Log.d(TAG, "onFinish: " + mCurrentURL);
             try {
                 mInstanceDatabase.insertNewNews(new News(mCurrentURL, html), mCurrentArticle);
             } catch (IOException e) {
