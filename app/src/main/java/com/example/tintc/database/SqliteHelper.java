@@ -36,7 +36,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_ARTICLE = "CREATE TABLE " +  SqliteHelper.TABLE_ARTICLE + " (" +
             SqliteHelper.URL +  " TEXT PRIMARY KEY, " + SqliteHelper.SOURCE + " TEXT," +
             SqliteHelper.AUTHOR + " TEXT, " + SqliteHelper.TIME + " TEXT, " + SqliteHelper.TITLE + " TEXT,"
-            + SqliteHelper.DESCRIPTION + " TEXT, " + SqliteHelper.IMAGE + " BLOB);";
+            + SqliteHelper.DESCRIPTION + " TEXT, " + SqliteHelper.IMAGE + " TEXT);";
     private static final String DELETE_TABLE_ARTICLE = "DROP TABLE IF EXISTS " + SqliteHelper.TABLE_ARTICLE ;
 
     public SqliteHelper(@Nullable Context context) {

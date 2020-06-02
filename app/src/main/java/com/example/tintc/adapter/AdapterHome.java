@@ -19,9 +19,7 @@ import com.example.tintc.R;
 import com.example.tintc.config.DateUtils;
 import com.example.tintc.model.Article;
 import com.example.tintc.model.News;
-import com.example.tintc.utils.BitmapUtils;
 import com.example.tintc.view.DetailActivity;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -51,15 +49,9 @@ public class AdapterHome extends RecyclerView.Adapter<AdapterHome.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder: " + position + " - " + isHistory);
-        if(isHistory && articles.get(position) != null){
-            Glide.with(context)
-                    .load(BitmapUtils.convertByteToBitmap(articles.get(position).getImageBitmap()))
-                    .into(holder.imgBanner);
-        }else{
-            Glide.with(context)
-                    .load(articles.get(position).getUrlToImage())
-                    .into(holder.imgBanner);
-        }
+        Glide.with(context)
+                .load(articles.get(position).getUrlToImage())
+                .into(holder.imgBanner);
 
         holder.tvSource.setText(articles.get(position).getSource().getName());
         holder.tvTitle.setText(articles.get(position).getTitle());
@@ -72,18 +64,13 @@ public class AdapterHome extends RecyclerView.Adapter<AdapterHome.ViewHolder> {
             intent.putExtra("link", articles.get(position).getUrl());
 
             intent.putExtra("article", articles.get(position));
-
+            intent.putExtra("image", articles.get(position).getUrlToImage());
+            intent.putExtra("offline", isHistory);
             if (isHistory) {
-                Log.d(TAG, "onBindViewHolder: true");
                 News currentNews = mMapHistory.get(articles.get(position));
-                intent.putExtra("offline", true);
-                intent.putExtra("image", articles.get(position).getImageBitmap());
-                if(currentNews != null){
+                if (currentNews != null) {
                     intent.putExtra("html", currentNews.getHtml());
                 }
-            } else {
-                intent.putExtra("offline", false);
-                intent.putExtra("image", articles.get(position).getUrlToImage());
             }
 
             holder.itemView.getContext().startActivity(intent);

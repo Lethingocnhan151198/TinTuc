@@ -50,13 +50,13 @@ public class Article implements Serializable {
         this.imageBitmap = image;
     }
 
-    public Article(String source, String author, String title, String description, String url, byte[] image, String publishedAt) {
+    public Article(String source, String author, String title, String description, String url, String urlToImage, String publishedAt) {
         this.source = new Source(source, source);
         this.author = author;
         this.title = title;
         this.description = description;
         this.url = url;
-        this.imageBitmap = image;
+        this.urlToImage = urlToImage;
         this.publishedAt = publishedAt;
     }
 

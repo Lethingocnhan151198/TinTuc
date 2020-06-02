@@ -73,22 +73,14 @@ public class DetailActivity extends AppCompatActivity implements OnResult {
 //        String gsonArticle =  intent.getStringExtra("article");
 //        mCurrentArticle = new Gson().fromJson(gsonArticle, Article.class);
         mCurrentArticle = (Article) intent.getSerializableExtra("article");
-
+        String imageUrl = intent.getStringExtra("image");
         if (isOffline) {
             mCurrentHtml = intent.getStringExtra("html");
-            Bitmap bitmapImage = BitmapUtils.convertByteToBitmap(Objects.requireNonNull(intent.getByteArrayExtra("image")));
-            Glide.with(this)
-                    .load(bitmapImage)
-                    .into(imageView);
-
-            Log.d(TAG, "getData: true");
-        } else {
-            String imageUrl = intent.getStringExtra("image");
-            Glide.with(this)
-                    .load(imageUrl)
-                    .into(imageView);
-            Log.d(TAG, "getData: false");
         }
+
+        Glide.with(this)
+                .load(imageUrl)
+                .into(imageView);
         loader.setVisibility(View.VISIBLE);
 
         tvSourceTl.setText(source);

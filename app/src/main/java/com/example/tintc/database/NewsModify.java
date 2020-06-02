@@ -64,7 +64,7 @@ public class NewsModify {
         values.put(SqliteHelper.DESCRIPTION, article.getDescription());
 
 
-        values.put(SqliteHelper.IMAGE, article.getImageBitmap());
+        values.put(SqliteHelper.IMAGE, article.getUrlToImage());
         long id = mDbWrite.insert(SqliteHelper.TABLE_ARTICLE, null, values);
 
         Log.d(TAG, "insertArticle: " + id);
@@ -111,7 +111,7 @@ public class NewsModify {
             String title = cursor.getString(cursor.getColumnIndex(SqliteHelper.TITLE));
             String description = cursor.getString(cursor.getColumnIndex(SqliteHelper.DESCRIPTION));
 
-            byte[] image = cursor.getBlob(cursor.getColumnIndex(SqliteHelper.IMAGE));
+            String image = cursor.getString(cursor.getColumnIndex(SqliteHelper.IMAGE));
 
             articles.add(new Article(source, author, title, description, url, image, time));
 

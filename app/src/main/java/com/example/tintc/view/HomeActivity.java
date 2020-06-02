@@ -259,7 +259,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             public void onResponse(Call<Headline> call, Response<Headline> response) {
                 arrayList.clear();
                 arrayList = (ArrayList<Article>) response.body().getArticles();
-                getAllBitmap();
                 setUpRecycler(false);
                 swipeRefresh.setRefreshing(false);
             }
@@ -282,7 +281,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 swipeRefresh.setRefreshing(false);
                 arrayList.clear();
                 arrayList = (ArrayList<Article>) response.body().getArticles();
-                getAllBitmap();
                 setUpRecycler(false);
 
             }
@@ -304,7 +302,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             public void onResponse(Call<Headline> call, Response<Headline> response) {
                 arrayList.clear();
                 arrayList = (ArrayList<Article>) response.body().getArticles();
-                getAllBitmap();
                 swipeRefresh.setRefreshing(false);
             }
 
@@ -363,7 +360,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 arrayList.clear();
                 arrayList = (ArrayList<Article>) response.body().getArticles();
 
-                getAllBitmap();
                 setUpRecycler(false);
             }
 
@@ -375,20 +371,4 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private static final String TAG = "LOG_HomeActivity";
-
-    public void getAllBitmap() {
-        BitmapUtils.GetBitmapFromUrl getBitmap = new BitmapUtils.GetBitmapFromUrl(this);
-
-        Article[] articles = new Article[arrayList.size()];
-        getBitmap.execute(arrayList.toArray(articles));
-
-    }
-
-    @Override
-    public void onFinish(Article[] articles) {
-        Log.d(TAG, "onFinish: " + articles[0]);
-        arrayList.clear();
-        arrayList.addAll(Arrays.asList(articles));
-        swipeRefresh.setRefreshing(false);
-    }
 }
