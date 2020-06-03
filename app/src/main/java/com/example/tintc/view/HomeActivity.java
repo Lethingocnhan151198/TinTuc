@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.Menu;
@@ -38,11 +39,9 @@ import com.example.tintc.model.Headline;
 import com.example.tintc.model.News;
 import com.example.tintc.model.User;
 import com.example.tintc.utils.AccountUtils;
-import com.example.tintc.utils.BitmapUtils;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,10 +74,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
         mInstanceDatabase = NewsModify.getInstance(this);
         getData();
         addCategories();
@@ -185,11 +182,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case R.id.vnExpress:
                 vnExpress();
                 break;
+            case R.id.tinhte:
+                RefreshTinhte();
+                break;
             case R.id.cnn:
                 Cnn();
-            case R.id.Tinhte:
-                Tinhte();
                 break;
+
             case R.id.history:
                 loadHistory();
                 break;
@@ -207,7 +206,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void loadHistory() {
-        // call Api vn Express
         arrayList.clear();
         swipeRefresh.setRefreshing(true);
 
@@ -220,8 +218,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         for (News news : newsList) {
             for (Article article : articleList) {
                 if (news.getUrl().equals(article.getUrl())) {
-                    mapHistory.put(article, news);
-                    break;
+                    if (news.getId() <10) {
+
+                        mapHistory.put(article, news);
+                        break;
+                    }
                 }
             }
         }
@@ -266,13 +267,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onFailure(Call<Headline> call, Throwable t) {
                 swipeRefresh.setRefreshing(false);
-                Toast.makeText(HomeActivity.this, "Dữ liệu lỗi", Toast.LENGTH_SHORT).show();
+                Toast.makeText(HomeActivity.this, "Dữ liệu lỗi,Kiểm tra lại mạng!", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void Cnn() {
-        // call Api vn Express
         swipeRefresh.setRefreshing(true);
         Call<Headline> call = ApiClient.getInstance().getData().getDataDomain("cnn.com", API_KEY);
         call.enqueue(new Callback<Headline>() {
@@ -293,16 +293,17 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    private void Tinhte() {
-        // call Api vn Express
+    private void RefreshTinhte() {
         swipeRefresh.setRefreshing(true);
         Call<Headline> call = ApiClient.getInstance().getData().getDataDomain("tinhte.vn", API_KEY);
         call.enqueue(new Callback<Headline>() {
             @Override
             public void onResponse(Call<Headline> call, Response<Headline> response) {
+                swipeRefresh.setRefreshing(false);
                 arrayList.clear();
                 arrayList = (ArrayList<Article>) response.body().getArticles();
-                swipeRefresh.setRefreshing(false);
+                setUpRecycler(false);
+
             }
 
             @Override

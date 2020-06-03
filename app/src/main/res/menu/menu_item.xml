@@ -4,13 +4,13 @@
     <item
         android:title="Chọn Website"
         app:showAsAction="always">
-        <menu>
+        <menu>f
             <item
                 android:id="@+id/vnExpress"
                 android:icon="@drawable/ic_vnexpress"
                 android:title="VnExpress" />
             <item
-                android:id="@+id/Tinhte"
+                android:id="@+id/tinhte"
                 android:icon="@drawable/ic_cnn"
                 android:title="Tinh Tế" />
             <item
@@ -25,7 +25,7 @@
         app:showAsAction="always"
         >
         <menu>
-            <item android:title="Đã lưu"
+            <item android:title="Gần đây"
                 android:id="@+id/history"
                 android:icon="@drawable/ic_history"/>
             <item android:title="Đăng xuất"

@@ -58,11 +58,9 @@ public class AdapterHome extends RecyclerView.Adapter<AdapterHome.ViewHolder> {
         holder.tvTime.setText(DateUtils.getInstance().dateTime(articles.get(position).getPublishedAt()));
         holder.cardView.setOnClickListener(v -> {
             Intent intent = new Intent(holder.itemView.getContext(), DetailActivity.class);
-
             intent.putExtra("time", DateUtils.getInstance().dateTime(articles.get(position).getPublishedAt()));
             intent.putExtra("source", articles.get(position).getSource().getName());
             intent.putExtra("link", articles.get(position).getUrl());
-
             intent.putExtra("article", articles.get(position));
             intent.putExtra("image", articles.get(position).getUrlToImage());
             intent.putExtra("offline", isHistory);
@@ -70,11 +68,10 @@ public class AdapterHome extends RecyclerView.Adapter<AdapterHome.ViewHolder> {
                 News currentNews = mMapHistory.get(articles.get(position));
                 if (currentNews != null) {
                     intent.putExtra("html", currentNews.getHtml());
+                    intent.putExtra("postion",currentNews.getId());
                 }
             }
-
             holder.itemView.getContext().startActivity(intent);
-
         });
     }
 

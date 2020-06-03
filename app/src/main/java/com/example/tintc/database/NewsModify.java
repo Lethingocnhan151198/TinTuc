@@ -17,10 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by TranTien
- * Date 06/01/2020.
- */
 public class NewsModify {
     private static NewsModify mInstance;
     private Context mContext;
@@ -45,8 +41,6 @@ public class NewsModify {
 
     private void insertNews(@NonNull News news) {
         ContentValues values = new ContentValues();
-        Toast.makeText(mContext, "Chung cc", Toast.LENGTH_SHORT).show();
-
         values.put(SqliteHelper.URL_NEWS, news.getUrl());
         values.put(SqliteHelper.HTML_NEWS, news.getHtml());
 

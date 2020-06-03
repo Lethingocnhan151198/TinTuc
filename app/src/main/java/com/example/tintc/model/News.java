@@ -1,9 +1,5 @@
 package com.example.tintc.model;
 
-/**
- * Created by TranTien
- * Date 06/01/2020.
- */
 public class News {
     int id;
     String url;

@@ -84,7 +84,6 @@ public class RegisterActivity extends AppCompatActivity {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Toast.makeText(RegisterActivity.this, "Test clicked", Toast.LENGTH_SHORT).show();
                         if (dataSnapshot.exists()){
                             Toast.makeText(RegisterActivity.this, "Tài khoản đã tồn tại!", Toast.LENGTH_SHORT).show();
                         }
@@ -102,7 +101,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void registerAccount() {
         User user = new User();
-        Toast.makeText(this, "test toast", Toast.LENGTH_SHORT).show();
         user.setFullName(edtName.getText().toString());
         user.setPhoneNumber(edtSdtRegister.getText().toString());
         user.setPassword(edtPasswordRegister.getText().toString());

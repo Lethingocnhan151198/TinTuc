@@ -1,14 +1,9 @@
 package com.example.tintc.view;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
@@ -24,14 +19,11 @@ import com.example.tintc.callbacks.OnResult;
 import com.example.tintc.database.NewsModify;
 import com.example.tintc.model.Article;
 import com.example.tintc.model.News;
-import com.example.tintc.utils.BitmapUtils;
 import com.example.tintc.utils.CheckNetwork;
 import com.example.tintc.utils.RetrieveHtml;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.util.Objects;
 
 public class DetailActivity extends AppCompatActivity implements OnResult {
     private ImageView imageView;
@@ -58,6 +50,7 @@ public class DetailActivity extends AppCompatActivity implements OnResult {
         mInstanceDatabase = NewsModify.getInstance(this);
         retrieveHtml = new RetrieveHtml(this);
         mCurrentHtml = null;
+
         init();
         getData();
 
@@ -66,14 +59,15 @@ public class DetailActivity extends AppCompatActivity implements OnResult {
     private void getData() {
         Log.d(TAG, "getData: ");
         Intent intent = getIntent();
+
         isOffline = intent.getBooleanExtra("offline", false);
         String source = intent.getStringExtra("source");
         String time = intent.getStringExtra("time");
         mCurrentURL = intent.getStringExtra("link");
-//        String gsonArticle =  intent.getStringExtra("article");
-//        mCurrentArticle = new Gson().fromJson(gsonArticle, Article.class);
         mCurrentArticle = (Article) intent.getSerializableExtra("article");
         String imageUrl = intent.getStringExtra("image");
+
+
         if (isOffline) {
             mCurrentHtml = intent.getStringExtra("html");
         }
@@ -86,7 +80,7 @@ public class DetailActivity extends AppCompatActivity implements OnResult {
         tvSourceTl.setText(source);
         tvTime.setText(time);
 
-        if(!isOffline){
+        if (!isOffline) {
             retrieveHtml.execute(mCurrentURL);
         }
 
@@ -104,13 +98,13 @@ public class DetailActivity extends AppCompatActivity implements OnResult {
             webView.loadUrl(mCurrentURL);
         }
 
-        if(webView.isShown()){
+        if (webView.isShown()) {
             loader.setVisibility(View.INVISIBLE);
         }
 
         fabShare.setOnClickListener(v -> {
-            if(isOffline){
-                Toast.makeText(this, "cannot share in history news", Toast.LENGTH_SHORT).show();
+            if (isOffline) {
+                Toast.makeText(this, "Cannot share in history news", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -120,7 +114,6 @@ public class DetailActivity extends AppCompatActivity implements OnResult {
                 Toast.makeText(this, "Please connect wifi", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
     private void init() {
@@ -130,12 +123,6 @@ public class DetailActivity extends AppCompatActivity implements OnResult {
         imageView = findViewById(R.id.imageView);
         webView = findViewById(R.id.webView);
         loader = findViewById(R.id.webViewLoader);
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     private void onShareClicked(String videoLink) {
@@ -150,11 +137,10 @@ public class DetailActivity extends AppCompatActivity implements OnResult {
 
     @Override
     public void onFinish(String html) {
-        if(!isOffline){
-            Log.d(TAG, "onFinish: " + mCurrentURL);
-            Log.d(TAG, "onFinish: " + mCurrentURL);
+        if (!isOffline) {  // nếu là offline
             try {
-                mInstanceDatabase.insertNewNews(new News(mCurrentURL, html), mCurrentArticle);
+                final int position = getIntent().getIntExtra("postion", -1);
+                mInstanceDatabase.insertNewNews(new News(position, mCurrentURL, html), mCurrentArticle);
             } catch (IOException e) {
                 e.printStackTrace();
             }

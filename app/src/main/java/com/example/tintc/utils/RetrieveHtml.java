@@ -11,10 +11,6 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.util.Arrays;
 
-/**
- * Created by TranTien
- * Date 05/31/2020.
- */
 public class RetrieveHtml extends AsyncTask<String, Void, String> {
 
     private OnResult listener;
