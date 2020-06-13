@@ -10,9 +10,9 @@
                 android:icon="@drawable/ic_vnexpress"
                 android:title="VnExpress" />
             <item
-                android:id="@+id/tinhte"
+                android:id="@+id/wsj"
                 android:icon="@drawable/ic_cnn"
-                android:title="Tinh Tế" />
+                android:title="Wsj.com" />
             <item
                 android:id="@+id/cnn"
                 android:icon="@drawable/ic_cnn"

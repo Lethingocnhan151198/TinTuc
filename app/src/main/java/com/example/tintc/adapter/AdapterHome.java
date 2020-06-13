@@ -13,13 +13,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.bumptech.glide.Glide;
 import com.example.tintc.R;
 import com.example.tintc.config.DateUtils;
 import com.example.tintc.model.Article;
 import com.example.tintc.model.News;
 import com.example.tintc.view.DetailActivity;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -49,10 +48,10 @@ public class AdapterHome extends RecyclerView.Adapter<AdapterHome.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder: " + position + " - " + isHistory);
-        Glide.with(context)
+        Picasso.get()
                 .load(articles.get(position).getUrlToImage())
+                .fit()
                 .into(holder.imgBanner);
-
         holder.tvSource.setText(articles.get(position).getSource().getName());
         holder.tvTitle.setText(articles.get(position).getTitle());
         holder.tvTime.setText(DateUtils.getInstance().dateTime(articles.get(position).getPublishedAt()));

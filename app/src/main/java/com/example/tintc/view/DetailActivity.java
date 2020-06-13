@@ -2,8 +2,10 @@ package com.example.tintc.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
@@ -13,7 +15,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bumptech.glide.Glide;
 import com.example.tintc.R;
 import com.example.tintc.callbacks.OnResult;
 import com.example.tintc.database.NewsModify;
@@ -22,6 +23,8 @@ import com.example.tintc.model.News;
 import com.example.tintc.utils.CheckNetwork;
 import com.example.tintc.utils.RetrieveHtml;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 
@@ -50,7 +53,8 @@ public class DetailActivity extends AppCompatActivity implements OnResult {
         mInstanceDatabase = NewsModify.getInstance(this);
         retrieveHtml = new RetrieveHtml(this);
         mCurrentHtml = null;
-
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         init();
         getData();
 
@@ -72,8 +76,10 @@ public class DetailActivity extends AppCompatActivity implements OnResult {
             mCurrentHtml = intent.getStringExtra("html");
         }
 
-        Glide.with(this)
+        Picasso.get()
                 .load(imageUrl)
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .fit()
                 .into(imageView);
         loader.setVisibility(View.VISIBLE);
 
@@ -88,6 +94,11 @@ public class DetailActivity extends AppCompatActivity implements OnResult {
         webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient());
+        webView.getSettings().setLoadsImagesAutomatically(true);
+        webView.getSettings().setAppCacheMaxSize(1024*1024*8);
+        webView.getSettings().setAppCachePath("/data/data/com.your.package.appname/cache");
+        webView.getSettings().setAppCacheEnabled(true);
+        webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
 
         Log.d(TAG, "getData: " + isOffline);
         Log.d(TAG, "getData: " + mCurrentHtml);
@@ -137,7 +148,7 @@ public class DetailActivity extends AppCompatActivity implements OnResult {
 
     @Override
     public void onFinish(String html) {
-        if (!isOffline) {  // nếu là offline
+        if (!isOffline) {
             try {
                 final int position = getIntent().getIntExtra("postion", -1);
                 mInstanceDatabase.insertNewNews(new News(position, mCurrentURL, html), mCurrentArticle);

@@ -51,7 +51,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnResult {
+public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,OnResult {
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private ArrayList<Categories> categories;
@@ -182,8 +182,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case R.id.vnExpress:
                 vnExpress();
                 break;
-            case R.id.tinhte:
-                RefreshTinhte();
+            case R.id.wsj:
+                Wsj();
                 break;
             case R.id.cnn:
                 Cnn();
@@ -293,9 +293,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    private void RefreshTinhte() {
+    private void Wsj() {
         swipeRefresh.setRefreshing(true);
-        Call<Headline> call = ApiClient.getInstance().getData().getDataDomain("tinhte.vn", API_KEY);
+        Call<Headline> call = ApiClient.getInstance().getData().getDataDomain("wsj.com", API_KEY);
         call.enqueue(new Callback<Headline>() {
             @Override
             public void onResponse(Call<Headline> call, Response<Headline> response) {
